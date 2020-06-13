@@ -1,7 +1,6 @@
 ## ReactNative Project
 
-## Clone from 
-https://www.youtube.com/watch?v=bg-U0xZwcRk
+Cloned from: https://www.youtube.com/watch?v=bg-U0xZwcRk
 
 ## Run with:
 1. git clone
