@@ -12,7 +12,10 @@
   "dependencies": {
     "react": "16.11.0",
     "react-native": "0.62.2",
-    "react-native-maps": "0.27.1"
+    "react-native-geolocation-service": "^5.0.0",
+    "react-native-google-places-autocomplete": "^1.7.2",
+    "react-native-maps": "0.27.1",
+    "react-native-maps-directions": "^1.8.0"
   },
   "devDependencies": {
     "@babel/core": "7.10.2",
@@ -22,6 +25,7 @@
     "eslint": "6.8.0",
     "jest": "24.9.0",
     "metro-react-native-babel-preset": "0.58.0",
+    "react-native-dotenv": "^0.2.0",
     "react-test-renderer": "16.11.0"
   },
   "jest": {
