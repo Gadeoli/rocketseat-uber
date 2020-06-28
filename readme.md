@@ -1,7 +1,8 @@
 ## Uber simple layout to study react native 0.62.2
 ReactNative Project
-Cloned from: https://www.youtube.com/watch?v=bg-U0xZwcRk
+Cloned from: https://www.youtube.com/watch?v=bg-U0xZwcRk <br />
 Tested: with android emulator
+Credits to: Diego Fernandes | Rocketseat
 
 ## Run with:
 1. git clone
