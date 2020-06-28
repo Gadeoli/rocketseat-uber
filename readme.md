@@ -9,7 +9,7 @@ Credits to: Diego Fernandes | Rocketseat
 2. npm i
 3. add googleMapApiKeyRocketUber with your google api key on: bashrc, bash_profile or relative (check your system / you can add your key manually too) - This is used on manifest.xml
 4. rename .env.example to .env and config your vars
-5. Your googleApiKey need to contain this APIs:
+5. Your googleApiKey need to contain this APIs: <br />
     Places API <br />
     Directions API <br /> 
     Maps SDK for Android <br />
