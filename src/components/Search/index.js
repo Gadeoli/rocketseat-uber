@@ -1,11 +1,16 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { GOOGLE_API_KEY } from 'react-native-dotenv';
 import { Platform } from 'react-native';
 
 const Search = (props) => {
     // console.log(GOOGLE_API_KEY)
+    const [focused, setFocused] = useState(false)
     const { onLocationSelected } = props
+
+    useEffect(() => {
+        console.log(focused)
+    }, [])
 
     return <GooglePlacesAutocomplete 
         placeholder="Para onde?"
@@ -17,8 +22,11 @@ const Search = (props) => {
         }}
         textInputProps={{
             autoCapitalize: "none",
-            autoCorrect: false
+            autoCorrect: false,
+            onFocus: () => setFocused(true),
+            onBlur: () => setFocused(false)
         }}
+        listViewDisplayed={focused}
         fetchDetails
         enablePoweredByContainer={false}
         styles={{

@@ -1,9 +1,25 @@
-import React, {useState, useEffect} from 'react';
-import { View, PermissionsAndroid } from 'react-native';
-import MapView from 'react-native-maps'
-import Geolocation from 'react-native-geolocation-service';
-import Search from '../Search'
+import React, {useState, useEffect, createRef} from 'react'
+import { View, Image, PermissionsAndroid } from 'react-native'
+import MapView, {Marker} from 'react-native-maps'
+import Geolocation from 'react-native-geolocation-service'
+import Geocoder from 'react-native-geocoding'
+
+import { GOOGLE_API_KEY } from 'react-native-dotenv'
 import Directions from '../Directions'
+import Details from '../Details'
+import Search from '../Search'
+import {getPixelSize} from '../../utils'
+import { 
+    LocationBox, 
+    LocationText,
+    LocationTimeBox,
+    LocationTimeText,
+    LocationTimeSmall,
+    Back
+} from './styles'
+
+import markerImage from '../../assets/marker.png'
+import backImage from '../../assets/back.png'
 
 const initialState = {
     region: {
@@ -16,8 +32,12 @@ const initialState = {
         latitude: 0,
         longitude: 0,
         title: ''
-    }
+    },
+    duration: null,
+    location: 'Estou aqui!'
 }
+
+Geocoder.init(GOOGLE_API_KEY)
 
 const requestLocationPermition = async () => {
     try {
@@ -45,6 +65,7 @@ const Map = () => {
     const [state, setState] = useState({...initialState})
     const {region} = state
     const {latitude, longitude} = region
+    const mapViewRef = createRef()
 
     const handleLocationSelected = (data, {geometry}) => {
         const {location: {lat: latitude, lng: longitude} } = geometry
@@ -58,6 +79,27 @@ const Map = () => {
         })
     }
 
+    const handleBack = () => {
+        setState({
+            ...state,
+            destination: {...initialState.destination}
+        })
+    }
+
+    //Not tested
+    //Need to add billing on google console
+    const getGeoCoderAddress = async ({latitude, longitude}) => {
+        /*
+        const res = await Geocoder.from({ latitude, longitude })
+        //console.log(res)
+
+        const address = res.results[0].formatted_address
+        const location = address.substring(0, address.indexOf(','))
+
+        setState({...state, location})
+        */
+    }
+
     useEffect(() => {
         checkLocationPermition = requestLocationPermition()
 
@@ -65,6 +107,8 @@ const Map = () => {
             Geolocation.getCurrentPosition(
                 (position) => {
                     const {coords} = position
+                    getGeoCoderAddress(coords)
+
                     setState({
                         ...state, 
                         region: {
@@ -86,21 +130,67 @@ const Map = () => {
     }, [latitude, longitude])
 
     return <View style={{flex: 1}}>
-        <MapView 
+        <MapView
+            ref={mapViewRef}
             style={{flex: 1}}
             region={state.region}
             showsUserLocation
             loadingEnabled
         >
             {state.destination.title ? (
-                <Directions
-                    origin={state.region}
-                    destination={state.destination}
-                    onReady={() => {}}
-                />
+                <>
+                    <Directions
+                        origin={state.region}
+                        destination={state.destination}
+                        onReady={result => {
+                            setState({...state, duration: Math.floor(result.duration)})
+                            if(mapViewRef){
+                                mapViewRef.current.fitToCoordinates(result.coordinates, {
+                                    edgePadding: {
+                                        top: getPixelSize(50), 
+                                        bottom: getPixelSize(50), 
+                                        left: getPixelSize(50), 
+                                        right: getPixelSize(350)
+                                    }
+                                })
+                            }
+                        }}
+                    />
+                    <Marker 
+                        coordinate={state.destination}
+                        anchor={{ x: 0, y: 0 }}
+                        image={markerImage}
+                    >
+                        <LocationBox>
+                            <LocationText>{state.destination.title}</LocationText>
+                        </LocationBox>
+                    </Marker>
+                    <Marker 
+                        coordinate={state.region}
+                        anchor={{ x: 0, y: 0 }}
+                    >
+                        <LocationBox>
+                            <LocationTimeBox>
+                                <LocationTimeText>{state.duration}</LocationTimeText>
+                                <LocationTimeSmall>MIN</LocationTimeSmall>
+                            </LocationTimeBox>
+                            <LocationText>{state.location}</LocationText>
+                        </LocationBox>
+                    </Marker>
+                </>
             ) : null}
         </MapView>
-        <Search onLocationSelected={handleLocationSelected}/>
+        {
+            state.destination.title ? 
+                <>
+                    <Back onPress={handleBack}>
+                        <Image source={backImage} />
+                    </Back>
+                    <Details />
+                </> : 
+                <Search onLocationSelected={handleLocationSelected}/>
+        }
+        
     </View>;
 }
 
